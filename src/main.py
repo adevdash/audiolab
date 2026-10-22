@@ -128,6 +128,42 @@ class AudioLabApp:
         self.mode_menu.pack(fill="x", pady=5)
         self.mode_menu.bind("<<ComboboxSelected>>", self._change_mode)
 
+        speed_header = tk.Frame(sidebar, bg=self.PANEL)
+        speed_header.pack(fill="x", pady=(18, 0))
+        tk.Label(
+            speed_header,
+            text="ANIMATION SPEED",
+            font=("Segoe UI", 9, "bold"),
+            fg=self.MUTED,
+            bg=self.PANEL,
+        ).pack(side="left")
+        self.speed = tk.DoubleVar(value=1.0)
+        self.speed_value = tk.Label(
+            speed_header,
+            text="1.0×",
+            font=("Segoe UI", 9),
+            fg=self.TEXT,
+            bg=self.PANEL,
+        )
+        self.speed_value.pack(side="right")
+        tk.Scale(
+            sidebar,
+            variable=self.speed,
+            from_=0.25,
+            to=2.5,
+            resolution=0.05,
+            orient="horizontal",
+            showvalue=False,
+            command=self._change_speed,
+            bg=self.PANEL,
+            fg=self.TEXT,
+            troughcolor="#292e3e",
+            activebackground=self.ACCENT,
+            highlightthickness=0,
+            sliderlength=16,
+            bd=0,
+        ).pack(fill="x", pady=(2, 5))
+
         self.status = tk.Label(
             sidebar,
             text="●  PLAYING",
@@ -219,7 +255,7 @@ class AudioLabApp:
             self.after_id = None
             return
 
-        self.phase += 0.07
+        self.phase += 0.07 * self.speed.get()
         self._draw_visualizer()
         self.after_id = self.root.after(33, self._animate)
 
@@ -241,6 +277,9 @@ class AudioLabApp:
 
     def _change_mode(self, _event=None):
         self._draw_visualizer()
+
+    def _change_speed(self, value):
+        self.speed_value.configure(text=f"{float(value):.1f}×")
 
     def _close(self):
         if self.after_id is not None:
