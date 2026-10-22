@@ -55,6 +55,15 @@ class AudioLabApp:
             "Subtle.TButton",
             background=[("active", "#373d51"), ("pressed", "#222635")],
         )
+        style.configure(
+            "Mode.TCombobox",
+            font=("Segoe UI", 10),
+            padding=8,
+            foreground=self.TEXT,
+            fieldbackground="#292e3e",
+            background="#292e3e",
+            arrowcolor=self.CYAN,
+        )
 
     def _build_layout(self):
         self.root.columnconfigure(1, weight=1)
@@ -101,12 +110,23 @@ class AudioLabApp:
             style="Subtle.TButton",
             command=self.pause,
         ).pack(fill="x", pady=5)
-        ttk.Button(
+        tk.Label(
             sidebar,
-            text="↻   Reset",
-            style="Subtle.TButton",
-            command=self.reset,
-        ).pack(fill="x", pady=5)
+            text="VISUALIZATION",
+            font=("Segoe UI", 9, "bold"),
+            fg=self.MUTED,
+            bg=self.PANEL,
+        ).pack(anchor="w", pady=(18, 5))
+        self.mode = tk.StringVar(value="Wave + Orbit")
+        self.mode_menu = ttk.Combobox(
+            sidebar,
+            textvariable=self.mode,
+            values=("Wave + Orbit", "Waveform", "Orbit"),
+            state="readonly",
+            style="Mode.TCombobox",
+        )
+        self.mode_menu.pack(fill="x", pady=5)
+        self.mode_menu.bind("<<ComboboxSelected>>", self._change_mode)
 
         self.status = tk.Label(
             sidebar,
@@ -150,30 +170,32 @@ class AudioLabApp:
                 width=1,
             )
 
-        points = []
-        for index in range(121):
-            x = width * 0.12 + width * 0.76 * index / 120
-            offset = index / 120 * math.tau
-            envelope = math.sin(math.pi * index / 120) ** 0.55
-            y = center_y + math.sin(offset * 2.2 + self.phase) * radius * 0.38 * envelope
-            y += math.sin(offset * 5.1 - self.phase * 0.7) * radius * 0.12 * envelope
-            points.extend((x, y))
-        canvas.create_line(*points, fill=self.ACCENT, width=3, smooth=True)
+        if self.mode.get() in ("Wave + Orbit", "Waveform"):
+            points = []
+            for index in range(121):
+                x = width * 0.12 + width * 0.76 * index / 120
+                offset = index / 120 * math.tau
+                envelope = math.sin(math.pi * index / 120) ** 0.55
+                y = center_y + math.sin(offset * 2.2 + self.phase) * radius * 0.38 * envelope
+                y += math.sin(offset * 5.1 - self.phase * 0.7) * radius * 0.12 * envelope
+                points.extend((x, y))
+            canvas.create_line(*points, fill=self.ACCENT, width=3, smooth=True)
 
-        orbit_radius = radius * 0.72
-        for index in range(8):
-            angle = self.phase * 0.65 + index * math.tau / 8
-            x = center_x + math.cos(angle) * orbit_radius
-            y = center_y + math.sin(angle) * orbit_radius
-            size = 4 + 2 * (1 + math.sin(self.phase + index)) / 2
-            canvas.create_oval(
-                x - size,
-                y - size,
-                x + size,
-                y + size,
-                fill=self.CYAN if index % 2 == 0 else "#bd8aff",
-                outline="",
-            )
+        if self.mode.get() in ("Wave + Orbit", "Orbit"):
+            orbit_radius = radius * 0.72
+            for index in range(8):
+                angle = self.phase * 0.65 + index * math.tau / 8
+                x = center_x + math.cos(angle) * orbit_radius
+                y = center_y + math.sin(angle) * orbit_radius
+                size = 4 + 2 * (1 + math.sin(self.phase + index)) / 2
+                canvas.create_oval(
+                    x - size,
+                    y - size,
+                    x + size,
+                    y + size,
+                    fill=self.CYAN if index % 2 == 0 else "#bd8aff",
+                    outline="",
+                )
 
         glow = 15 + 4 * math.sin(self.phase * 1.4)
         canvas.create_oval(
@@ -187,7 +209,7 @@ class AudioLabApp:
         canvas.create_text(
             center_x,
             center_y + radius * 1.8,
-            text="LIVE WAVEFORM",
+            text=self.mode.get().upper(),
             fill=self.MUTED,
             font=("Segoe UI", 9, "bold"),
         )
@@ -217,14 +239,8 @@ class AudioLabApp:
             self.after_id = None
         self.status.configure(text="●  PAUSED", fg="#f1bd6c")
 
-    def reset(self):
-        self.phase = 0.0
-        self.running = True
-        if self.after_id is not None:
-            self.root.after_cancel(self.after_id)
-        self.status.configure(text="●  PLAYING", fg=self.CYAN)
+    def _change_mode(self, _event=None):
         self._draw_visualizer()
-        self._animate()
 
     def _close(self):
         if self.after_id is not None:
