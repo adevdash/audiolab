@@ -1,7 +1,71 @@
-from PyQt6.QtWidgets import QApplication, QWidget
-
-# Only needed for access to command line arguments
+from PyQt6.QtCore import QSize, Qt
+from PyQt6.QtGui import QAction, QColor, QPalette
+from PyQt6.QtWidgets import QApplication, QWidget, QMainWindow, \
+    QPushButton, QLabel, QLineEdit, QVBoxLayout, QMenu, QHBoxLayout, QComboBox
 import sys
+
+import numpy as np
+
+from matplotlib.backends.backend_qtagg import FigureCanvas
+from matplotlib.backends.backend_qtagg import NavigationToolbar2QT as NavigationToolbar
+from matplotlib.backends.qt_compat import QtWidgets
+from matplotlib.figure import Figure
+
+import globals
+from view.Buttons import PlayPause
+from audio.source import AudioSource
+
+class Color(QWidget):
+    def __init__(self, color):
+        super().__init__()
+        self.setAutoFillBackground(True)
+
+        palette = self.palette()
+        palette.setColor(QPalette.ColorRole.Window, QColor(color))
+        self.setPalette(palette)
+
+# Subclass QMainWindow to customize your application's main window
+class MainWindow(QMainWindow):
+    def __init__(self):
+        super().__init__()
+
+        self.setMouseTracking(True)
+        self.setWindowTitle("My App")
+        self.label = QLabel("Click on this window")
+        self.label.setMouseTracking(True)
+
+
+        layout1 = QHBoxLayout()
+        layout2 = QVBoxLayout()
+        layout3 = QVBoxLayout()
+
+        self.audioSource1 = AudioSource("SIN", 440)
+        layout2.addWidget(PlayPause(self.audioSource1))
+        combobox2 = QComboBox()
+        combobox2.addItems(['One', 'Two', 'Three', 'Four'])
+        layout2.addWidget(Color("yellow"))
+        layout2.addWidget(Color("purple"))
+
+        layout1.addLayout(layout2)
+
+        layout1.addWidget(Color("green"))
+
+        layout3.addWidget(Color("red"))
+        layout3.addWidget(Color("purple"))
+
+        layout1.addLayout(layout3)
+
+        container = QWidget()
+        container.setLayout(layout1)
+        self.setCentralWidget(container)
+        self.setMinimumSize(QSize(400, 300))
+
+    def contextMenuEvent(self, e):
+        context = QMenu(self)
+        context.addAction(QAction("test 1", self))
+        context.addAction(QAction("test 2", self))
+        context.addAction(QAction("test 3", self))
+        context.exec(e.globalPos())
 
 # You need one (and only one) QApplication instance per application.
 # Pass in sys.argv to allow command line arguments for your app.
@@ -9,7 +73,7 @@ import sys
 app = QApplication(sys.argv)
 
 # Create a Qt widget, which will be our window.
-window = QWidget()
+window = MainWindow()
 window.show()  # IMPORTANT!!!!! Windows are hidden by default.
 
 # Start the event loop.
