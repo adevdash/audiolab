@@ -29,6 +29,24 @@ class AudioProcess(QRunnable):
                 time.sleep(self.latency)
         print("Thread complete")
 
+class PowerButton(QPushButton):
+    # Simple Button to start or stop a device
+    def __init__(self, device):
+        super().__init__()
+        self.setText("OFF")
+        self.setCheckable(True)
+        self.setChecked(False)
+        self.clicked.connect(self.onClick)
+        self.device = device
+
+    def onClick(self):
+        if self.isChecked():
+            self.device.start()
+            self.setText("ON")
+        else:
+            self.device.stop()
+            self.setText("OFF")
+
 class PlayPause(QPushButton):
     def __init__(self, audioSource):
         super().__init__()
@@ -47,5 +65,3 @@ class PlayPause(QPushButton):
             self.threadpool.start(AudioProcess(self, .1))
         else:
             self.setText("Play")
-            
-            
