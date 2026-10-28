@@ -37,7 +37,6 @@ class Mixer(Playable):
             if input.isRunning:
                 x_input = input.genAudio(nSamp, nCh)
                 x += x_input
-        self.debug += 1
         return x
 
 
