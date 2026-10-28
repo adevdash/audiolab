@@ -30,7 +30,6 @@ class Playable(object):
 class Mixer(Playable):
     def __init__(self, inputs):
         self.inputs = inputs
-        self.outputBuffer = np.empty(0)
 
     def genAudio(self, nSamp: int, nCh: int) -> np.ndarray:
         x = np.zeros((nSamp, nCh))
