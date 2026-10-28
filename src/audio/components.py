@@ -30,7 +30,6 @@ class Playable(object):
 class Mixer(Playable):
     def __init__(self, inputs):
         self.inputs = inputs
-        self.debug = 0
 
     def genAudio(self, nSamp: int, nCh: int) -> np.ndarray:
         x = np.zeros((nSamp, nCh))
@@ -38,10 +37,6 @@ class Mixer(Playable):
             if input.isRunning:
                 x_input = input.genAudio(nSamp, nCh)
                 x += x_input
-                if self.debug % 44000:
-                    print(x_input[:5])
-        if self.debug % 4400:
-            print(x[:5])
         self.debug += 1
         return x
 
