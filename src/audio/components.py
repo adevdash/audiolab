@@ -6,9 +6,15 @@ import sys
 class Playable(object):
     def __init__(self):
         self.outputs = []
+        self.isRunning = False
 
     def genAudio(self, nSamp: int) -> np.ndarray:
         return np.zeros((nSamp, 1))
+
+    def start(self):
+        self.isRunning = True
+    def stop(self):
+        self.isRunning = False
 
     def genAudioCallback(self):
         def audioCallback(outdata: np.ndarray, frames: int, time: CData, status: sd.CallbackFlags) -> None:
