@@ -22,7 +22,6 @@ class Playable(object):
             if status:
                 print(status, file = sys.stderr)
 
-            print(outdata.shape)
             outdata[:] = self.genAudio(frames, outdata.shape[1])
 
         return audioCallback
