@@ -8,8 +8,8 @@ class Playable(object):
         self.outputs = []
         self.isRunning = False
 
-    def genAudio(self, nSamp: int) -> np.ndarray:
-        return np.zeros((nSamp, 1))
+    def genAudio(self, nSamp: int, nCh: int) -> np.ndarray:
+        return np.zeros((nSamp, nCh))
 
     def start(self):
         self.isRunning = True
@@ -22,10 +22,9 @@ class Playable(object):
                 print(status, file = sys.stderr)
 
             print(outdata.shape)
-            outdata[:] = self.genAudio(frames)
+            outdata[:] = self.genAudio(frames, outdata.shape[1])
 
         return audioCallback
-
 
 class Mixer(Playable):
     def __init__(self, inputs):
