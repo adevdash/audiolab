@@ -12,8 +12,9 @@ from matplotlib.backends.qt_compat import QtWidgets
 from matplotlib.figure import Figure
 
 import globals
-from view.Buttons import PlayPause
+from view.Buttons import PlayPause, PowerButton
 from audio.source import AudioSource
+from audio.components import Mixer, Speaker
 
 class Color(QWidget):
     def __init__(self, color):
@@ -40,17 +41,25 @@ class MainWindow(QMainWindow):
         layout3 = QVBoxLayout()
 
         self.audioSource1 = AudioSource("SIN", 440)
-        layout2.addWidget(PlayPause(self.audioSource1))
-        combobox2 = QComboBox()
-        combobox2.addItems(['One', 'Two', 'Three', 'Four'])
-        layout2.addWidget(Color("yellow"))
+        self.audioSource2 = AudioSource("SIN", 550)
+        self.mixer = Mixer([self.audioSource1, self.audioSource2])
+        self.speaker = Speaker(self.mixer)
+
+        layout2.addWidget(QLabel("440 Hz"))
+        layout2.addWidget(PowerButton(self.audioSource1))
+        layout2.addWidget(QLabel("660 Hz"))
+        layout2.addWidget(PowerButton(self.audioSource2))
+        layout2.addWidget(QLabel("Mixer"))
+        layout2.addWidget(PowerButton(self.mixer))
+        layout2.addWidget(QLabel("Speaker"))
+        layout2.addWidget(PowerButton(self.speaker))
         layout2.addWidget(Color("purple"))
 
         layout1.addLayout(layout2)
 
         layout1.addWidget(Color("green"))
 
-        layout3.addWidget(Color("red"))
+        layout3.addWidget(PowerButton(self.audioSource1))
         layout3.addWidget(Color("purple"))
 
         layout1.addLayout(layout3)

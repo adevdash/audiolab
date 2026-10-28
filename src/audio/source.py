@@ -5,13 +5,14 @@ import sys
 from audio.components import Playable
 class AudioSource(Playable):
     def __init__(self, source_type, f = 440.0):
+        super().__init__()
         self.source_type = source_type
         self.active = False
         self.f = f  # Default frequency in Hz
         self.A = 1.0    # Default amplitude (0.0 to 1.0)
         self.samples_sent = 0
 
-    def genAudio(self, nSamp):
+    def genAudio(self, nSamp, nCh):
         if self.source_type == 'SIN':
             x = np.sin(2*np.pi * self.f * (np.arange(nSamp) + self.samples_sent) / globals.Fs)
         elif self.source_type == 'SAW':
@@ -21,7 +22,7 @@ class AudioSource(Playable):
         elif self.source_type == 'TRI':
             pass
         self.samples_sent += nSamp
-        return self.A * np.expand_dims(x, axis=1)
+        return self.A * np.tile(x, (nCh, 1)).T
 
     def reset(self):
         self.samples_sent = 0
