@@ -32,11 +32,9 @@ class Mixer(Playable):
         self.inputs = inputs
         self.outputBuffer = np.empty(0)
 
-    def writeOutSamples(self):
-        def audioCallback(outdata: np.ndarray, frames: int,
-            time: any, status: sd.CallbackFlags) -> None:
-            if status:
-                print(status, file=sys.stderr)
-            outdata[:, 0] = self.genAudio(frames)
-        return audioCallback
-
+    def genAudio(self, nSamp: int, nCh: int) -> np.ndarray:
+        x = np.zeros((nSamp, nCh))
+        for input in self.inputs:
+            if input.isRunning:
+                x += input.genAudio(nSamp, nCh)
+        return x
