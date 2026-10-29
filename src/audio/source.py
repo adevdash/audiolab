@@ -8,9 +8,17 @@ class AudioSource(Playable):
         super().__init__()
         self.source_type = source_type
         self.active = False
-        self.f = f  # Default frequency in Hz
-        self.A = 1.0    # Default amplitude (0.0 to 1.0)
+        self.f = f
+        self.A = 1.0
         self.samples_sent = 0
+
+    @property
+    def f(self):
+        return self._f
+    @f.setter
+    def f(self, f):
+        self._f = f
+        self._smp_per_period = globals.Fs/f
 
     def genAudio(self, nSamp, nCh):
         if self.source_type == 'SIN':
