@@ -16,6 +16,7 @@ import globals
 from view.Buttons import PlayPause, PowerButton
 from audio.source import AudioSource
 from audio.components import Mixer, Speaker
+from view.visualizers import WaveformVisualizer
 
 class Color(QWidget):
     def __init__(self, color):
@@ -48,16 +49,12 @@ class MainWindow(QMainWindow):
         self.mixer = Mixer([self.audioSource1, self.audioSource2])
         self.speaker = Speaker(self.mixer)
 
-        self.figure = Figure()
         # this is the Canvas Widget that displays the `figure`
         # it takes the `figure` instance as a parameter to __init__
-        self.canvas = FigureCanvas(self.figure)
-        # this is the Navigation widget
-        # it takes the Canvas widget and a parent
-        self.toolbar = NavigationToolbar(self.canvas, self)
+        self.canvas = WaveformVisualizer()
         # Just some button connected to `plot` method
         self.button = QPushButton('Plot')
-        self.button.clicked.connect(self.plot)
+        self.button.clicked.connect(self.canvas.plot)
 
         # set the layout
         # layout = QtGui.QVBoxLayout()
