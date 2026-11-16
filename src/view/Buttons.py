@@ -69,58 +69,34 @@ class PlayPause(QPushButton):
             self.threadpool.start(AudioProcess(self, .1))
         else:
             self.setText("Play")
-class Device(QWidget):
-    def __init__(self, device, app):
+
+class Keyboard(QWidget):
+    def __init__(self):
+        pass
+class Key(QWidget):
+    def __init__(self):
         super().__init__()
+        self.setMouseTracking(True)
 
-        self.layout = QVBoxLayout()
-        self.app = app
+    def mousePressEvent(self, e):
+        pass
 
-        self.device = device
+    def mouseReleaseEvent(self, e):
+        pass
 
-        row1 = QHBoxLayout()
-        row1.addWidget(QLabel(device.name))
-        closeButton = QPushButton("X")
-        closeButton.clicked.connect(self.removeDevice)
-        row1.addWidget(closeButton)
-        self.layout.addLayout(row1)
+    def mouseMoveEvent(self, e):
+        pass
 
-        row2 = QHBoxLayout()
-        row2.addWidget(PowerButton(device))
-        self.deviceList = QComboBox()
-        row2.addWidget(self.deviceList)
-
-        self.layout.addLayout(row2)
-        
-        self.setLayout(self.layout)
-
-    def updateDeviceList(self):
-        self.deviceList.clear()
-        self.deviceList.addItems([None] + [d.name for d in self.app.allDevices if d and d != self])
-
-    def removeDevice(self):
-        self.setParent(None)
-        self.app.removeDevice(self)
-
-    @property
-    def name(self):
-        return self.device.name
-class VDevicePanel(QWidget):
-    def __init__(self, app):
+class WhiteKey(Key):
+    def __init__(self):
         super().__init__()
-        self.app = app
-        self.allDevices = app.allDevices
-        self.devices = []
+        self.AutoFillBackground(True)
+        palette = self.palette()
+        palette.setColor(QPalette.ColorRole.Window, QColor("white"))
 
-        self.layout = QVBoxLayout()
-
-        self.addDeviceButton = QPushButton("+")
-        self.addDeviceButton.clicked.connect(self.addDevice)
-
-        self.layout.addWidget(self.addDeviceButton)
-        self.setLayout(self.layout)
-
-    def addDevice(self):
-        newDevice = self.app.createDevice()
-        self.layout.addWidget(newDevice)
-        self.devices.append(newDevice)
+class BlackKey(Key):
+    def __init__(self):
+        super().__init__()
+        self.AutoFillBackground(True)
+        palette = self.palette()
+        palette.setColor(QPalette.ColorRole.Window, QColor("black"))
