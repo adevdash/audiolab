@@ -1,5 +1,8 @@
 from PyQt6.QtCore import QSize, Qt
-from PyQt6.QtWidgets import QPushButton
+from PyQt6.QtWidgets import (
+    QPushButton, QWidget, QHBoxLayout,
+    QVBoxLayout, QPalette, QLabel
+    QComboBox)
 
 import sounddevice as sd
 import globals
@@ -65,3 +68,17 @@ class PlayPause(QPushButton):
             self.threadpool.start(AudioProcess(self, .1))
         else:
             self.setText("Play")
+class Device(QWidget):
+    def __init__(self, device):
+        super().__init__()
+
+        self.layout = QVBoxLayout()
+        self.layout.addWidget(QLabel(device.name))
+
+        row2 = QHBoxLayout()
+        row2.addWidget(PowerButton(device))
+        row2.addWidget(QComboBox())
+
+        self.layout.addWidget(row2)
+        
+        self.setLayout(self.layout)
