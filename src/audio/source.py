@@ -12,6 +12,7 @@ class AudioSource(Playable):
         self.A = 1.0
         self.samples_sent = 0
         self.phase = 0
+        self.name = "Wumbo"
 
     @property
     def f(self):

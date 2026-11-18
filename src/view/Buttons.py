@@ -1,8 +1,9 @@
 from PyQt6.QtCore import QSize, Qt
 from PyQt6.QtWidgets import (
     QPushButton, QWidget, QHBoxLayout,
-    QVBoxLayout, QPalette, QLabel
+    QVBoxLayout, QLabel,
     QComboBox)
+from PyQt6.QtGui import QAction, QColor, QPalette
 
 import sounddevice as sd
 import globals
@@ -69,16 +70,29 @@ class PlayPause(QPushButton):
         else:
             self.setText("Play")
 class Device(QWidget):
-    def __init__(self, device):
+    def __init__(self, device, parent):
         super().__init__()
 
         self.layout = QVBoxLayout()
-        self.layout.addWidget(QLabel(device.name))
+        self.name = "Wumbo 2"
+        self.parent = parent
+
+        row1 = QHBoxLayout()
+        row1.addWidget(QLabel(device.name))
+        closeButton = QPushButton("X")
+        closeButton.clicked.connect(parent.removeDevice)
+        row1.addWidget(closeButton)
+        self.layout.addLayout(row1)
 
         row2 = QHBoxLayout()
         row2.addWidget(PowerButton(device))
-        row2.addWidget(QComboBox())
+        self.deviceList = QComboBox()
+        row2.addWidget(self.deviceList)
 
-        self.layout.addWidget(row2)
+        self.layout.addLayout(row2)
         
         self.setLayout(self.layout)
+
+    def updateDeviceList(self):
+        self.deviceList.clear()
+        self.deviceList.addItems([d.name for d in self.parent.allDevices])
