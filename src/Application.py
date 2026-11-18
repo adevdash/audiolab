@@ -27,10 +27,13 @@ class Color(QWidget):
         palette.setColor(QPalette.ColorRole.Window, QColor(color))
         self.setPalette(palette)
 
-
+class Application(QMainWindow):
+    def __init__(self):
+        super().__init__()
+        self.allDevices = []
 
 # Subclass QMainWindow to customize your application's main window
-class MainWindow(QMainWindow):
+class MainWindow(Application):
     def __init__(self):
         super().__init__()
 
