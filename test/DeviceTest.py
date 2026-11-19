@@ -8,28 +8,22 @@ import sys, os
 from pathlib import Path
 sys.path.append(str(Path('./src').resolve()))
 
-from view.Buttons import Device
+from Application import Application
+from view.Buttons import Device, VDevicePanel
 from audio.source import AudioSource
 
-class MainWindow(QMainWindow):
+class MainWindow(Application):
     def __init__(self):
         super().__init__()
-        self.allDevices = []
 
-        self.source = AudioSource("SIN")
-        self.device = Device(self.source, self)
+        # self.source = AudioSource("SIN")
+        # self.device = Device(self.source, self)
 
-        self.allDevices.append(self.device)
-        self.updateDeviceLists()
+        # self.allDevices.append(self.device)
+        # self.updateDeviceLists()
 
-        self.setCentralWidget(self.device)
-
-    def removeDevice(self):
-        print("removeDevice stub")
-
-    def updateDeviceLists(self):
-        for device in self.allDevices:
-            device.updateDeviceList()
+        self.devicePanel = VDevicePanel(self)
+        self.setCentralWidget(self.devicePanel)
 
 app = QApplication(sys.argv)
 window = MainWindow()

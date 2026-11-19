@@ -13,7 +13,7 @@ from matplotlib.backends.qt_compat import QtWidgets
 from matplotlib.figure import Figure
 
 import globals
-from view.Buttons import PlayPause, PowerButton
+from view.Buttons import PlayPause, PowerButton, Device
 from audio.source import AudioSource
 from audio.components import Mixer, Speaker
 from view.visualizers import WaveformVisualizer
@@ -30,7 +30,26 @@ class Color(QWidget):
 class Application(QMainWindow):
     def __init__(self):
         super().__init__()
-        self.allDevices = []
+        self.allDevices = [None]
+        self.deviceCounter = 1
+
+    def createDevice(self):
+        newDevice = Device(AudioSource("SIN", name = f"Audio Source {self.deviceCounter}"), self)
+        self.allDevices.append(newDevice)
+        self.deviceCounter += 1
+        self.updateDeviceLists()
+        return newDevice
+
+    def removeDevice(self, device):
+        deviceIdx = self.allDevices.index(device)
+        del self.allDevices[deviceIdx]
+        self.updateDeviceLists()
+
+    def updateDeviceLists(self):
+        for d in self.allDevices:
+            if d:
+                d.updateDeviceList()
+
 
 # Subclass QMainWindow to customize your application's main window
 class MainWindow(Application):

@@ -70,17 +70,18 @@ class PlayPause(QPushButton):
         else:
             self.setText("Play")
 class Device(QWidget):
-    def __init__(self, device, parent):
+    def __init__(self, device, app):
         super().__init__()
 
         self.layout = QVBoxLayout()
-        self.name = "Wumbo 2"
-        self.parent = parent
+        self.app = app
+
+        self.device = device
 
         row1 = QHBoxLayout()
         row1.addWidget(QLabel(device.name))
         closeButton = QPushButton("X")
-        closeButton.clicked.connect(parent.removeDevice)
+        closeButton.clicked.connect(self.removeDevice)
         row1.addWidget(closeButton)
         self.layout.addLayout(row1)
 
@@ -95,4 +96,31 @@ class Device(QWidget):
 
     def updateDeviceList(self):
         self.deviceList.clear()
-        self.deviceList.addItems([d.name for d in self.parent.allDevices])
+        self.deviceList.addItems([None] + [d.name for d in self.app.allDevices if d and d != self])
+
+    def removeDevice(self):
+        self.setParent(None)
+        self.app.removeDevice(self)
+
+    @property
+    def name(self):
+        return self.device.name
+class VDevicePanel(QWidget):
+    def __init__(self, app):
+        super().__init__()
+        self.app = app
+        self.allDevices = app.allDevices
+        self.devices = []
+
+        self.layout = QVBoxLayout()
+
+        self.addDeviceButton = QPushButton("+")
+        self.addDeviceButton.clicked.connect(self.addDevice)
+
+        self.layout.addWidget(self.addDeviceButton)
+        self.setLayout(self.layout)
+
+    def addDevice(self):
+        newDevice = self.app.createDevice()
+        self.layout.addWidget(newDevice)
+        self.devices.append(newDevice)

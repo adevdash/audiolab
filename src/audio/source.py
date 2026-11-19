@@ -4,15 +4,15 @@ import sounddevice as sd
 import sys
 from audio.components import Playable
 class AudioSource(Playable):
-    def __init__(self, source_type, f = 440.0):
+    def __init__(self, source_type = "SIN", f = 440.0, name = "OWEJIFJO"):
         super().__init__()
+        self.name = name
         self.source_type = source_type
         self.active = False
         self.f = f
         self.A = 1.0
         self.samples_sent = 0
         self.phase = 0
-        self.name = "Wumbo"
 
     @property
     def f(self):
